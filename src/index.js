@@ -40,7 +40,7 @@ function isValidPair(s1, s2, offset) {
     return c.START_EARLY_END_LATE;
   } else if (s2.start >= s1.end) {
     return c.START_AFTER_END;
-  } else if (s2.end <= s2.start) {
+  } else if (s2.end <= s1.start) {
     return c.END_BEFORE_START; // TODO future optional inclusion
   }
   return false;
@@ -73,8 +73,7 @@ function makePairs(s1, s2, offset) {
   return primary;
 }
 
-module.exports = {
-  makePairs: makePairs,
-  isInRange: isInRange,
-  isValidPair: isValidPair,
-};
+makePairs.isInRange = isInRange;
+makePairs.isValidPair = isValidPair;
+
+module.exports = makePairs;

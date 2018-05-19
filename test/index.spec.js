@@ -18,6 +18,10 @@ describe('Pairing subtitles:', function() {
     { start: 89833, end: 97000, text: [ 'two second behind1' ] },
   ];
   /* eslint-disable */
+  var outliers = [
+    { start: 1000, end: 2000, text: [ 'very far behind' ] },
+    { start: 300000, end: 340000, text: [ 'very far ahead' ] },
+  ];
   var endMatchStartLate = [
     { start: 82833, end: 89000, text: [ 'paired ending, late start' ] },
     { start: 95833, end: 99000, text: [ 'paired ending, late start' ] },
@@ -80,6 +84,9 @@ describe('Pairing subtitles:', function() {
     it('START_LATE_END_EARLY', function(){
       expect(pairing.isValidPair(base[0], startLateEndEarly[0], 0)).to.equal('START_LATE_END_EARLY');
     });
+    it('END_BEFORE_START', function(){
+      expect(pairing.isValidPair(base[0], outliers[0], 0)).to.equal('END_BEFORE_START');
+    });
     it('no match', function(){
       expect(pairing.isValidPair(base[0], twoBehind[0], 0)).to.equal(false);
     });
@@ -106,30 +113,34 @@ describe('Pairing subtitles:', function() {
     it('pairs base with itself', function() {
       expected[0].secondaryText = base[0].text;
       expected[1].secondaryText = base[1].text;
-      expect(pairing.makePairs(base, base, 1)).to.deep.equal(expected);
+      expect(pairing(base, base, 1)).to.deep.equal(expected);
     });
 
     it('pairs when offset matches behind', function() {
       expected[0].secondaryText = twoBehind[0].text;
       expected[1].secondaryText = twoBehind[1].text;
-      expect(pairing.makePairs(base, twoBehind, 3000)).to.deep.equal(expected);
+      expect(pairing(base, twoBehind, 3000)).to.deep.equal(expected);
       expected[0].secondaryText = twoAhead[0].text;
       expected[1].secondaryText = twoAhead[1].text;
-      expect(pairing.makePairs(base, twoAhead, 3000)).to.deep.equal(expected);
+      expect(pairing(base, twoAhead, 3000)).to.deep.equal(expected);
     });
 
     it('fails when offset doesn\'t match', function() {
-      expect(pairing.makePairs(base, twoBehind, 1000)).to.deep.equal(expected);
-      expect(pairing.makePairs(base, twoAhead, 1000)).to.deep.equal(expected);
+      expect(pairing(base, twoBehind, 1000)).to.deep.equal(expected);
+      expect(pairing(base, twoAhead, 1000)).to.deep.equal(expected);
     });
 
     it('pairs when within offset', function() {
       expected[0].secondaryText = startLateEndEarly[0].text;
       expected[1].secondaryText = startLateEndEarly[1].text;
-      expect(pairing.makePairs(base, startLateEndEarly, 1000)).to.deep.equal(expected);
+      expect(pairing(base, startLateEndEarly, 1000)).to.deep.equal(expected);
     });
 
     xit('handles partial pairings', function() {
+
+    });
+
+    xit('handles unmatched entries', function() {
 
     });
   });
